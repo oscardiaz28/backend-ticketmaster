@@ -21,6 +21,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -186,10 +187,11 @@ public class EventService {
     public CategoryWithEventsResponse eventsByCategory(int page, int size, String categoryName){
         CategoryEntity category = categoryRepository.findByName(categoryName)
                 .orElseThrow( () -> new AppException("Category not found") );
+        ZoneId zone = ZoneId.of("America/Lima");
         List<EventCardResponse> events = eventRepository.findByCategoryName(
                 EventStatusEnum.PUBLISHED,
                 categoryName,
-                LocalDateTime.now(),
+                LocalDateTime.now(zone),
                 Pageable.unpaged()
         );
 
@@ -202,13 +204,15 @@ public class EventService {
     }
 
     public List<EventCardResponse> searchPublishedEvents(String query){
-        return eventRepository.searchPublishedEvents(EventStatusEnum.PUBLISHED, LocalDateTime.now(), query);
+        ZoneId zone = ZoneId.of("America/Lima");
+        return eventRepository.searchPublishedEvents(EventStatusEnum.PUBLISHED, LocalDateTime.now(zone), query);
     }
 
     public EventEntity getPublishedEvent(String slug){
         EventEntity event = eventRepository.findByStatusAndSlug(EventStatusEnum.PUBLISHED, slug)
                 .orElseThrow( () -> new AppException("EVENT_NOT_FOUND", "Event not found") );
-        if( event.getStartDate().isBefore(LocalDateTime.now())  ){
+        ZoneId zone = ZoneId.of("America/Lima");
+        if( event.getStartDate().isBefore(LocalDateTime.now(zone))  ){
             throw new EventExpiredException();
         }
         return event;
@@ -216,7 +220,8 @@ public class EventService {
 
     @Scheduled(cron = "0 */2 * * * *")
     public void expiredEvents(){
-        LocalDateTime now = LocalDateTime.now();
+        ZoneId zone = ZoneId.of("America/Lima");
+        LocalDateTime now = LocalDateTime.now(zone);
         List<EventEntity> events = eventRepository.findExpiredEventsAndActive(now, EventStatusEnum.EXPIRED);
         for( EventEntity e : events ){
             System.out.println("Evento expirado: " + e.getName());

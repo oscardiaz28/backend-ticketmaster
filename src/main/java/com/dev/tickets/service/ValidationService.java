@@ -10,6 +10,7 @@ import com.dev.tickets.repository.TicketValidationRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Map;
 
 @Service
@@ -42,6 +43,7 @@ public class ValidationService {
     }
 
     private TicketValidationEntity getTicketValidationEntity(TicketEntity ticket, TicketValidationMethodEnum method ) {
+        ZoneId zone = ZoneId.of("America/Lima");
         if( ticket.getStatus() == TicketStatusEnum.USED ){
             saveValidation(ticket, TicketValidationStatusEnum.ALREADY_USED);
             throw new AppException("Ticket ya fue usado");
@@ -52,7 +54,7 @@ public class ValidationService {
             throw new AppException("Ticket cancelado");
         }
 
-        if( ticket.getTicketType().getEvent().getStartDate().isBefore(LocalDateTime.now()) ){
+        if( ticket.getTicketType().getEvent().getStartDate().isBefore(LocalDateTime.now(zone)) ){
             saveValidation(ticket, TicketValidationStatusEnum.EXPIRED);
             throw new AppException("El evento ha expirado");
         }

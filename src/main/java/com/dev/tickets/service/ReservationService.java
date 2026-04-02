@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,7 +39,8 @@ public class ReservationService {
         reservation.setStatus(ReservationStatus.ACTIVE);
         reservation.setUser(loggedUser);
         reservation.setEvent(event);
-        reservation.setExpiresAt(LocalDateTime.now().plusMinutes(15));
+        ZoneId zone = ZoneId.of("America/Lima");
+        reservation.setExpiresAt(LocalDateTime.now(zone).plusMinutes(15));
 
         List<ReservationItem> items = new ArrayList<>();
         for(ReservationTicketRequest ticket : request.getTickets()){
