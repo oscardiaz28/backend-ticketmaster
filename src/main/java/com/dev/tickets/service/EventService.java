@@ -218,7 +218,7 @@ public class EventService {
         return event;
     }
 
-    @Scheduled(cron = "0 */2 * * * *")
+    @Scheduled(cron = "0 0 */12 * * *")
     public void expiredEvents(){
         ZoneId zone = ZoneId.of("America/Lima");
         LocalDateTime now = LocalDateTime.now(zone);
