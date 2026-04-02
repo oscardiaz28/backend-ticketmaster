@@ -11,6 +11,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,11 +40,12 @@ public class TicketTypeEntity {
     @JoinColumn(name = "event_id")
     private EventEntity event;
     private boolean isDeleted;
-    @CreationTimestamp
     private LocalDateTime createdAt;
 
     @PrePersist
     public void prePersist(){
+        ZoneId zone = ZoneId.of("America/Lima");
+        this.createdAt = LocalDateTime.now(zone);
         this.reserved = 0;
         this.sold = 0;
         this.isDeleted = false;

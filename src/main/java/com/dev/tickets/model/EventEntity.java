@@ -10,6 +10,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,8 +50,19 @@ public class EventEntity {
     private List<UserEntity> staff = new ArrayList<>();
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
     private List<TicketTypeEntity> ticketTypes = new ArrayList<>();
-    @CreationTimestamp
     private LocalDateTime createdAt;
-    @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    @PrePersist
+    void prePersist(){
+        ZoneId zone = ZoneId.of("America/Lima");
+        this.createdAt = LocalDateTime.now(zone);
+    }
+
+    @PreUpdate
+    void preUpdate(){
+        ZoneId zone = ZoneId.of("America/Lima");
+        this.updatedAt = LocalDateTime.now(zone);
+    }
+
 }

@@ -8,6 +8,7 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 @Getter
 @Setter
@@ -26,6 +27,12 @@ public class TicketValidationEntity {
     @ManyToOne
     @JoinColumn(name = "ticket_id")
     private TicketEntity ticket;
-    @CreationTimestamp
     private LocalDateTime createdAt;
+
+    @PrePersist
+    public void prePersist() {
+        ZoneId zone = ZoneId.of("America/Lima");
+        this.createdAt = LocalDateTime.now(zone);
+    }
+
 }

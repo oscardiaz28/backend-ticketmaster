@@ -10,6 +10,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +25,6 @@ public class OrderEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
     private BigDecimal total;
-    @CreationTimestamp
     private LocalDateTime createdAt;
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
@@ -36,4 +36,11 @@ public class OrderEntity {
     @JsonIgnore
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderDetailEntity> orderDetails = new ArrayList<>();
+
+    @PrePersist
+    void prePersist(){
+        ZoneId zone = ZoneId.of("America/Lima");
+        this.createdAt = LocalDateTime.now(zone);
+    }
+
 }

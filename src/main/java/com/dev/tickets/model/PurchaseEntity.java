@@ -9,6 +9,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +23,6 @@ public class PurchaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime createdAt;
     private BigDecimal total;
@@ -31,6 +31,11 @@ public class PurchaseEntity {
     private UserEntity buyer;
     @OneToMany(mappedBy = "purchase", cascade = CascadeType.ALL)
     private List<TicketEntity> tickets = new ArrayList<>();
+
+    @PrePersist
+    void prePersist(){
+        this.createdAt = LocalDateTime.now(ZoneId.of("America/Lima"));
+    }
 
     public void addTickets(TicketTypeEntity type, int quantity ){
         type.reserve(quantity);

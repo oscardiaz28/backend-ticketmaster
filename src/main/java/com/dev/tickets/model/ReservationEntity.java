@@ -8,6 +8,7 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 
 @Getter
@@ -31,6 +32,12 @@ public class ReservationEntity {
     private UserEntity user;
     @OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL)
     private List<ReservationItem> items;
-    @CreationTimestamp
     private LocalDateTime createdAt;
+
+    @PrePersist
+    void prePersist(){
+        ZoneId zone = ZoneId.of("America/Lima");
+        this.createdAt = LocalDateTime.now(zone);
+    }
+
 }
